@@ -110,3 +110,6 @@ coverage/
 *.zip
 *.tgz
 *.tar.gz
+
+#database
+*.db
