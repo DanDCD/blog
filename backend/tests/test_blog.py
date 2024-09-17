@@ -1,9 +1,13 @@
 import pytest
 import json
+from flask import Flask
 from datetime import datetime
-from run import app  # Import the app from run.py
-from src.models import Blog  # Import the Blog model from src/models.py
-from src import db  # Import the db object from src/__init__.py
+from src.db import Blog
+from src.db import db
+from src.app import create_test_db, add_routes
+
+
+
 
 test_blog_data_1 = {
     "title": "Discussing the book Emma by Jane Austen",
@@ -29,15 +33,12 @@ test_blog_data_2 = {
 def client():
     # Pre-test setup
     print("Setting up app for testing")
-
-    app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"  # Use an in-memory SQLite database for testing
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app = Flask(__name__)
+    create_test_db(app)
+    add_routes(app)
 
     # Create the test client and test database
     with app.test_client() as client:
-        with app.app_context():
-            db.create_all()  # Create the database schema
 
         yield client  # Run the tests
 
