@@ -1,6 +1,6 @@
 from flask import request, jsonify, Blueprint
-from src.models import Blog
-from src import db
+from src.db import Blog
+from src.db import db
 
 blog_routes = Blueprint('blog_routes', __name__)
 
