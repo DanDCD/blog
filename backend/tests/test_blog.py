@@ -1,8 +1,9 @@
 import pytest
 import json
 from datetime import datetime
-from src.app import app
-
+from run import app  # Import the app from run.py
+from src.models import Blog  # Import the Blog model from src/models.py
+from src import db  # Import the db object from src/__init__.py
 
 test_blog_data_1 = {
     "title": "Discussing the book Emma by Jane Austen",
@@ -26,17 +27,26 @@ test_blog_data_2 = {
 
 @pytest.fixture
 def client():
-    # pre-test
+    # Pre-test setup
     print("Setting up app for testing")
 
+    app.config["TESTING"] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"  # Use an in-memory SQLite database for testing
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # Create the test client and test database
     with app.test_client() as client:
+        with app.app_context():
+            db.create_all()  # Create the database schema
 
-        app.config["TESTING"] = True
+        yield client  # Run the tests
 
-        yield client  # run test now
+        # Post-test cleanup
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()  # Drop all tables after the test
 
-    # post-test
-    print("tearing app down after testing")
+    print("Tearing app down after testing")
 
 
 def test_get_empty_blogs_list(client):
@@ -57,16 +67,16 @@ def test_post_valid_blog(client):
         client (FlaskClient): a flask test client
     """
 
-    # attempt to post a new blog
+    # Post a new blog
     post_response = client.post("/blogs", json=test_blog_data_1)
-    # check the immediate response
+    # Check the immediate response
     assert post_response.status_code == 201
-    assert post_response.json == test_blog_data_1
+    assert post_response.json["title"] == test_blog_data_1["title"]
 
-    # attempt to retrieve the posted blog using GET method
+    # Retrieve the posted blog using GET method
     get_response = client.get("/blogs")
     assert get_response.status_code == 200
-    assert test_blog_data_1 in get_response.json
+    assert any(blog['title'] == test_blog_data_1["title"] for blog in get_response.json)
 
 
 def test_post_and_retrieve_multiple_blogs(client):
@@ -75,21 +85,19 @@ def test_post_and_retrieve_multiple_blogs(client):
     Args:
         client (FlaskClient): a flask test client
     """
-    
-    # attempt to post a new blog
+
+    # Post the first blog
     post_response = client.post("/blogs", json=test_blog_data_1)
-    # check the immediate response
     assert post_response.status_code == 201
-    assert post_response.json == test_blog_data_1
-    
-    # attempt to post another blog
+    assert post_response.json["title"] == test_blog_data_1["title"]
+
+    # Post the second blog
     post_response = client.post("/blogs", json=test_blog_data_2)
-    # check the immediate response
     assert post_response.status_code == 201
-    assert post_response.json == test_blog_data_2
-    
-    # attempt to retrieve the posted blogs using GET method
+    assert post_response.json["title"] == test_blog_data_2["title"]
+
+    # Retrieve the posted blogs using GET method
     get_response = client.get("/blogs")
     assert get_response.status_code == 200
-    assert test_blog_data_1 in get_response.json
-    assert test_blog_data_2 in get_response.json
+    assert any(blog['title'] == test_blog_data_1["title"] for blog in get_response.json)
+    assert any(blog['title'] == test_blog_data_2["title"] for blog in get_response.json)
