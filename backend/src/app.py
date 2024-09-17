@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-
 blogs = []  # In-memory storage for blogs
+
+
 
 @app.route('/blogs', methods=['GET'])
 def get_blogs():
