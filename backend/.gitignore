@@ -1,0 +1,112 @@
+# Byte-compiled / cached / compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery beat schedule file
+celerybeat-schedule
+
+# dotenv
+.env
+.env.*
+
+# virtualenv
+.venv/
+venv/
+
+# VSCode settings and workspace files
+.vscode/
+
+# macOS generated files
+.DS_Store
+
+# Windows generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE / Editor specific files
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Test output files
+test-results/
+coverage/
+
+# Logs
+*.log
+*.out
+*.err
+
+# Other development files
+*.swp
+*~
+
+# Build artifacts
+*.o
+*.out
+*.map
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+
+# Packaging artifacts
+*.deb
+*.tar
+*.zip
+*.tgz
+*.tar.gz
