@@ -23,4 +23,6 @@ def create_test_db(app):
 
 def add_routes(app):
     from src.routes import blog_routes
+    from src.routes import user_routes
     app.register_blueprint(blog_routes)
+    app.register_blueprint(user_routes)
