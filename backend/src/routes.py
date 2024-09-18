@@ -12,6 +12,16 @@ def get_users():
     return jsonify([user.to_dict() for user in all_users])
 
 
+@user_routes.route("/get/users/<string:username>", methods=["GET"])
+def get_user_by_username(username):
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify(user.to_dict()), 200
+
+
 @user_routes.route("/users", methods=["POST"])
 def add_user():
     data = request.json
