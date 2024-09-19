@@ -3,6 +3,8 @@ from src.db import Blog
 from src.db import User
 from src.db import db
 
+
+# USER ROUTES:
 user_routes = Blueprint("user_routes", __name__)
 
 
@@ -12,7 +14,7 @@ def get_users():
     return jsonify([user.to_dict() for user in all_users])
 
 
-@user_routes.route("/get/users/<string:username>", methods=["GET"])
+@user_routes.route("/users/<string:username>", methods=["GET"])
 def get_user_by_username(username):
     user = User.query.filter_by(username=username).first()
 
@@ -31,6 +33,22 @@ def add_user():
     return jsonify(new_user.to_dict()), 201
 
 
+@user_routes.route("/users/<string:username>", methods=["DELETE"])
+def delete_user_by_name(username):
+    # get user with username
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"error": "User not found"})
+    # first delete all the user's blogs
+    for blog in user.blogs:
+        db.session.delete(blog)
+    # finally delete the user
+    db.session.delete(user)
+    db.session.commit()
+    return "", 204
+
+
+# BLOG ROUTES:
 blog_routes = Blueprint("blog_routes", __name__)
 
 

@@ -12,6 +12,7 @@ def create_prod_db(app):
     with app.app_context():
         db.create_all()
 
+
 def create_test_db(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -20,6 +21,7 @@ def create_test_db(app):
     # Create the database tables (if they don't exist)
     with app.app_context():
         db.create_all()
+
 
 def add_routes(app):
     from src.routes import blog_routes

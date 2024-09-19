@@ -3,32 +3,9 @@ import json
 from flask import Flask
 from src.db import Blog, User, db
 from src.app import create_test_db, add_routes
+from tests.utils import *
+from tests.data import *
 
-# Test data for blogs and users
-test_blog_data_1 = {
-    "title": "Discussing the book Emma by Jane Austen",
-    "author_id": None,
-    "content": """Emma is a novel written by English author Jane Austen. It is set in the fictional country village of Highbury and 
-                  the surrounding estates of Hartfield, Randalls, and Donwell Abbey.""",
-}
-
-test_blog_data_2 = {
-    "title": "Discussing the book Pride and Prejudice by Jane Austen",
-    "author_id": None,
-    "content": """Pride and Prejudice is an 1813 romantic novel of manners written by Jane Austen. 
-                  The novel follows Elizabeth Bennet and the repercussions of hasty judgments.""",
-}
-
-test_user_data_1 = {"username": "Gru", "password": "iloveminions"}
-test_user_data_2 = {"username": "Vector", "password": "dir+mag"}
-
-
-# helper function for comparing a 'true' dict to a response dict
-def compare_data(ground_truth_data: dict, response_data: dict):
-    for key in ground_truth_data:
-        if ground_truth_data[key] != response_data.get(key):
-            return False
-    return True
 
 
 # fixtures set up and tear down each test
@@ -45,39 +22,16 @@ def client():
             db.drop_all()
 
 
-# helper function to create user
-def create_user(client, user_data):
-    response = client.post("/users", json=user_data)
-    assert response.status_code == 201
-    return response.json
+# TESTS:
 
+# check we can add users and then retrieve them with get '/users'
+def test_get_users(client):
+    user_1 = create_user(client, test_user_data_1)
+    user_2 = create_user(client, test_user_data_2)
 
-# helper function to create blog
-def post_blog(client, blog_data):
-    response = client.post("/blogs", json=blog_data)
-    assert response.status_code == 201
-    return response.json
+    check_user_exists_in_get_users(client, user_1)
+    check_user_exists_in_get_users(client, user_2)
 
-
-# helper function to check that a blog exists using get /blogs
-def check_blog_exists_in_get_blogs(client, blog_data):
-    response = client.get("/blogs")
-    assert response.status_code == 200
-
-    blogs_with_title = [
-        blog for blog in response.json if blog["title"] == blog_data["title"]
-    ]
-    assert len(blogs_with_title) == 1 and compare_data(blog_data, blogs_with_title[0])
-
-
-def check_user_exists_in_get_users(client, user_data):
-    response = client.get("/users")
-    assert response.status_code == 200
-
-    users_with_name = [
-        user for user in response.json if user["username"] == user_data["username"]
-    ]
-    assert len(users_with_name) == 1 and compare_data(user_data, users_with_name[0])
 
 
 # test for retrieving blogs when none exist
@@ -115,9 +69,4 @@ def test_post_and_retrieve_multiple_blogs(client):
     check_blog_exists_in_get_blogs(client, blog_data_2)
 
 
-def test_get_user_by_username(client):
-    user_1 = create_user(client, test_user_data_1)
-    user_2 = create_user(client, test_user_data_2)
 
-    check_user_exists_in_get_users(client, user_1)
-    check_user_exists_in_get_users(client, user_2)
