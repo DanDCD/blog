@@ -29,21 +29,44 @@ def test_get_users(client):
     user_1 = create_user(client, test_user_data_1)
     user_2 = create_user(client, test_user_data_2)
 
-    check_user_exists_in_get_users(client, user_1)
-    check_user_exists_in_get_users(client, user_2)
+    assert check_user_exists_in_get_users(client, user_1)
+    assert check_user_exists_in_get_users(client, user_2)
 
+
+# check we can create users and then retrieve them with get '/users/username'
 def test_get_user_by_name(client):
     create_user(client, test_user_data_1)
     create_user(client, test_user_data_2)
-    
-    response_1 = client.get("/users/" + test_user_data_1['username'])
+
+    response_1 = client.get("/users/" + test_user_data_1["username"])
     assert response_1.status_code == 200
-    assert test_user_data_1['username'] == response_1.json['username']
-    
-    response_2 = client.get("/users/" + test_user_data_2['username'])
+    assert test_user_data_1["username"] == response_1.json["username"]
+
+    response_2 = client.get("/users/" + test_user_data_2["username"])
     assert response_2.status_code == 200
-    assert test_user_data_2['username'] == response_2.json['username']
+    assert test_user_data_2["username"] == response_2.json["username"]
+
+
+# test we can post a new user with post '/users/'
+def test_post_user(client):
+    assert (
+        create_user(client, test_user_data_1)["username"]
+        == test_user_data_1["username"]
+    )
+
+# test we can create new users and delete them
+def test_delete_user(client):
+    user_1 = create_user(client, test_user_data_1)
+    user_2 = create_user(client, test_user_data_2)
     
+    response_1 = client.delete("/users/"+user_1['username'])
+    assert response_1.status_code == 204
+    assert not check_user_exists_in_get_users(client, test_user_data_1)
+    
+    response_2 = client.delete("/users/"+user_2['username'])
+    assert response_2.status_code == 204
+    assert not check_user_exists_in_get_users(client, test_user_data_2)
+
 
 # test for retrieving blogs when none exist
 def test_get_empty_blogs_list(client):
@@ -61,7 +84,7 @@ def test_post_valid_blog(client):
     assert compare_data(blog_data, post_blog(client, blog_data))
 
     # check the blog can be retrieved from get /blogs
-    check_blog_exists_in_get_blogs(client, blog_data)
+    assert check_blog_exists_in_get_blogs(client, blog_data)
 
 
 # test for posting and retrieving multiple blogs
@@ -76,5 +99,5 @@ def test_post_and_retrieve_multiple_blogs(client):
     blog_data_2["author_id"] = user_id
     assert compare_data(blog_data_2, post_blog(client, blog_data_2))
 
-    check_blog_exists_in_get_blogs(client, blog_data_1)
-    check_blog_exists_in_get_blogs(client, blog_data_2)
+    assert check_blog_exists_in_get_blogs(client, blog_data_1)
+    assert check_blog_exists_in_get_blogs(client, blog_data_2)

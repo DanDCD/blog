@@ -31,7 +31,7 @@ def check_blog_exists_in_get_blogs(client, blog_data):
     blogs_with_title = [
         blog for blog in response.json if blog["title"] == blog_data["title"]
     ]
-    assert len(blogs_with_title) == 1 and compare_data(blog_data, blogs_with_title[0])
+    return len(blogs_with_title) == 1 and compare_data(blog_data, blogs_with_title[0])
 
 
 def check_user_exists_in_get_users(client, user_data):
@@ -41,4 +41,4 @@ def check_user_exists_in_get_users(client, user_data):
     users_with_name = [
         user for user in response.json if user["username"] == user_data["username"]
     ]
-    assert len(users_with_name) == 1 and compare_data(user_data, users_with_name[0])
+    return len(users_with_name) == 1 and compare_data(user_data, users_with_name[0])
