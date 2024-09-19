@@ -11,7 +11,7 @@ user_routes = Blueprint("user_routes", __name__)
 @user_routes.route("/users", methods=["GET"])
 def get_users():
     all_users = User.query.all()
-    return jsonify([user.to_dict() for user in all_users])
+    return jsonify([user.to_dict() for user in all_users]), 200
 
 
 @user_routes.route("/users/<string:username>", methods=["GET"])
@@ -55,7 +55,7 @@ blog_routes = Blueprint("blog_routes", __name__)
 @blog_routes.route("/blogs", methods=["GET"])
 def get_blogs():
     all_blogs = Blog.query.all()
-    return jsonify([blog.to_dict() for blog in all_blogs])
+    return jsonify([blog.to_dict() for blog in all_blogs]), 200
 
 
 @blog_routes.route("/blogs", methods=["POST"])
@@ -82,7 +82,7 @@ def update_blog(blog_id):
     blog.author_id = new_author.id
     blog.content = data["content"]
     db.session.commit()
-    return jsonify(blog.to_dict())
+    return jsonify(blog.to_dict()), 200
 
 
 @blog_routes.route("/blogs/<int:blog_id>", methods=["DELETE"])
