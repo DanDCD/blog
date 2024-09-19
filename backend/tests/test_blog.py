@@ -7,7 +7,6 @@ from tests.utils import *
 from tests.data import *
 
 
-
 # fixtures set up and tear down each test
 @pytest.fixture
 def client():
@@ -24,6 +23,7 @@ def client():
 
 # TESTS:
 
+
 # check we can add users and then retrieve them with get '/users'
 def test_get_users(client):
     user_1 = create_user(client, test_user_data_1)
@@ -32,7 +32,18 @@ def test_get_users(client):
     check_user_exists_in_get_users(client, user_1)
     check_user_exists_in_get_users(client, user_2)
 
-
+def test_get_user_by_name(client):
+    create_user(client, test_user_data_1)
+    create_user(client, test_user_data_2)
+    
+    response_1 = client.get("/users/" + test_user_data_1['username'])
+    assert response_1.status_code == 200
+    assert test_user_data_1['username'] == response_1.json['username']
+    
+    response_2 = client.get("/users/" + test_user_data_2['username'])
+    assert response_2.status_code == 200
+    assert test_user_data_2['username'] == response_2.json['username']
+    
 
 # test for retrieving blogs when none exist
 def test_get_empty_blogs_list(client):
@@ -67,6 +78,3 @@ def test_post_and_retrieve_multiple_blogs(client):
 
     check_blog_exists_in_get_blogs(client, blog_data_1)
     check_blog_exists_in_get_blogs(client, blog_data_2)
-
-
-
