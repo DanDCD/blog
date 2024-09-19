@@ -101,3 +101,36 @@ def test_post_and_retrieve_multiple_blogs(client):
 
     assert check_blog_exists_in_get_blogs(client, blog_data_1)
     assert check_blog_exists_in_get_blogs(client, blog_data_2)
+
+# test for updating a blog with put '/blogs/blog_id'
+def test_update_blog(client):
+    # create a user
+    user_id = create_user(client, test_user_data_1)["id"]
+    
+    # create a blog
+    blog_data = test_blog_data_1.copy()
+    blog_data["author_id"] = user_id
+    blog = post_blog(client, blog_data)
+    
+    # update the blog
+    updated_blog_data = test_blog_data_2.copy()
+    updated_blog_data["author_id"] = user_id
+    response = client.put("/blogs/"+str(blog['id']), json=updated_blog_data)
+    assert response.status_code == 200
+    assert compare_data(updated_blog_data, response.json)
+    
+
+# test for deleting a blod with delete '/blogs/blog_id'
+def test_delete_blog(client):
+    # create a user
+    user_id = create_user(client, test_user_data_1)["id"]
+    
+    # create a blog
+    blog_data = test_blog_data_1.copy()
+    blog_data["author_id"] = user_id
+    blog = post_blog(client, blog_data)
+    
+    # delete the blog
+    response = client.delete("/blogs/"+str(blog['id']))
+    assert response.status_code == 204
+    assert not check_blog_exists_in_get_blogs(client, blog_data)
